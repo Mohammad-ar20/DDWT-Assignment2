@@ -9,118 +9,179 @@
     var viewMode = Request["viewMode"] ?? "table";
 
     // Base SQL query
-    var sql = @"
-    SELECT 
-        bg.BGGId,
-        bg.Name,
-        bg.Description,
-        bg.YearPublished,
-        bg.MinPlayers,
-        bg.MaxPlayers,
-        bg.MfgPlayTime AS PlayTime,
-        bg.Family,
-        bg.ImagePath,
-        c.Category
-    FROM BoardGame AS bg
-    JOIN GameCategory AS gc ON bg.BGGId = gc.BGGId
-    JOIN Category AS c ON c.CategoryID = gc.Category
-    JOIN GameFamily AS f ON f.FamilyCode = bg.Family";
+    var sql = @"SELECT 
+            bg.BGGId, bg.Name, bg.Description, bg.YearPublished, bg.MinPlayers,
+            bg.MaxPlayers, bg.MfgPlayTime AS PlayTime, bg.Family, bg.ImagePath,
+            c.Category
+        FROM BoardGame bg
+        INNER JOIN GameCategory gc ON bg.BGGId = gc.BGGId
+        INNER JOIN Category c ON c.CategoryID = gc.Category
+        INNER JOIN GameFamily f ON f.FamilyCode = bg.Family
+        WHERE 1 = 1";
 
     var parameters = new List<object>();
-    var whereClauses = new List<string>();
+    //var whereClauses = new List<string>();
 
-    // Add conditions
+    // Search filter
     if (!String.IsNullOrEmpty(search))
     {
-        whereClauses.Add("bg.Name LIKE @" + parameters.Count);
+        sql += " AND bg.Name LIKE @" + parameters.Count + " ";
         parameters.Add("%" + search + "%");
+        //whereClauses.Add("bg.Name LIKE @" + parameters.Count);
+        //parameters.Add("%" + search + "%");
     }
 
     // Filter for categories
     if (!String.IsNullOrEmpty(category) && category != "All")
     {
-        whereClauses.Add("c.Category = @" + parameters.Count);
+        sql += "AND c.Category = @" + parameters.Count + " ";
         parameters.Add(category);
     }
 
-    if (whereClauses.Count > 0)
-    {
-        sql += " WHERE " + String.Join(" AND ", whereClauses);
-    }
-
+    //if (whereClauses.Count > 0)
+    //{
+    //    sql += " WHERE " + String.Join(" AND ", whereClauses);
+    //}
+    // Final sort order
     sql += " ORDER BY bg.Name";
 
     // Run query
     var games = db.Query(sql, parameters.ToArray());
+
+    var categories = db.Query("SELECT Category FROM Category ORDER BY Category");
 }
 
 <!DOCTYPE html>
-<html>
+@*<html>*@
 <head>
-    <title>Board Games</title>
+    <title>Board Games Directory</title>
     <style></style>
 </head>
-<body>
-    <h1>Board Games</h1>
+@*<body>*@
+<h1>Board Games</h1>
 
-    <form method="get" class="row g-3 mb-4 align-items-end">
-        <!-- Search box -->
-        <div class="col-md-4">
-            <input type="text" name="search" value="@Request["search"]" placeholder="Search by name..." />
-            @*<input type="submit" value="Search" />*@
-        </div>
+<form method="get" class="row g-3 mb-4 align-items-end">
+    <!-- Search box -->
+    <!--<div class="col-md-4">
+        <input type="text" name="search" value="@Request["search"]" placeholder="Search by name..." />-->
+    @*<input type="submit" value="Search" />*@
+    <!--</div>-->
 
-        <div class="col-md-3">
-            <label for="category" class="form-lable">Category</label>
-            <select id="category" name="category" class="form-select">
-                <option value="All">All Categories</option>
-                @*@foreach (var c in categories)*@
-                {
-                    @*<option value="@c.Category" @(category == c.Category ? "selected" : "")>@c.Category</option>*@
-                }
-            </select>
-        </div>
-
-        <!--View mode-->
-        <div class="col-md-3">
-            <label class="form-lable">View Mode</label>
-            <div>
-                <input type="radio" id="viewTable" name="viewMode" value="table" @(viewMode == "table" ? "checked" : "")>
-                <lable for="viewTable" class="me-2">Table</lable>
-                <input type="radio" id="viewCard" name="viewMode" value="card" @(viewMode=="card"?"checked":"")>
-                <label for="viewCard">Card</label>
-            </div>
-        </div>
-
-        <!--search button-->
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">Search</button>
-        </div>
-    </form>
-
-    @*<button onclick="toggleView()">Toggle View</button>*@
-    <div id="tableView" class="active-view">
-        <h2>Table View</h2>
+    <div class="col-md-4">
+        <input type="text" name="search" id="search" class="form-control"
+               placeholder="Enter board game name..."
+               value="@search"
+               maxlength="50" />
     </div>
 
-    <table border="1" cellpadding="5" class="table table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Year Published</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-            @foreach (var game in games)
+    <div class="col-md-3">
+        <label for="category" class="form-lable">Category</label>
+        <select id="category" name="category" class="form-select">
+            <option value="All">All Categories</option>
+            @foreach (var c in categories)
             {
-                <tr>
-                    <td>@game.Name</td>
-                    <td>@game.Category</td>
-                    <td>@game.YearPublished</td>
-                    <td>@game.Description</td>
-                </tr>
+                <option value="@c.Category" @(category == c.Category ? "selected" : "")>@c.Category</option>
             }
-    </table>
-</body>
-</html>
+        </select>
+    </div>
+
+    <!--View mode-->
+    <div class="col-md-3">
+        <label class="form-lable">View Mode</label>
+        <div>
+            <input type="radio" id="viewTable" name="viewMode" value="table" @(viewMode == "table" ? "checked" : "")>
+            <lable for="viewTable" class="me-2">Table</lable>
+            <input type="radio" id="viewCard" name="viewMode" value="card" @(viewMode == "card" ? "checked" : "")>
+            <label for="viewCard">Card</label>
+        </div>
+    </div>
+
+    <!--search button-->
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Search</button>
+    </div>
+</form>
+
+<!--Results-->
+@if (games.Any())
+{
+    <p class="text-muted">Showing @games.Count() board games</p>
+}
+@if (viewMode == "table")
+{
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover slign-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width:25%">Name</th>
+                    <th style="width:15%">Category</th>
+                    <th style="width:15%">Family</th>
+                    <th style="width:15%">Year Published</th>
+                    <th style="width:15%">Players</th>
+                    <th style="width:10%">Play Time</th>
+                    <th style="width:5%"></th>
+                    @*<th>Description</th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var game in games)
+                {
+                    <tr>
+                        <td>@Html.Encode(game.Name)</td>
+                        <td>@Html.Encode(game.Category)</td>
+                        <td>@Html.Encode(game.Family)</td>
+                        <td>@Html.Encode(game.YearPublished)</td>
+                        <td>@Html.Encode(game.MinPlayers)-@Html.Encode(game.MaxPlayers)</td>
+                        <td>@Html.Encode(game.PlayTime)</td>
+                        @*<td>@Html.Encode(game.Description)</td>*@
+                        <td>
+                            <a href="/Home/Details?id=@game.BGGId" class="btn btn-sm btn-outline-info">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<!--Card view-->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var game in games)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="@Html.Encode(game.ImagePath)" class="card-img-top"
+                         alt="@Html.Encode(game.Name)"
+                         style="height:200px; object-fit:cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@Html.Encode(game.Name)</h5>
+                        <p class="card-text">
+                            <strong>Category:</strong> @Html.Encode(game.Category)<br />
+                            <strong>Family:</strong> @Html.Encode(game.Family)<br />
+                            <strong>Year:</strong> @Html.Encode(game.YearPublished)<br />
+                            <strong>Players:</strong> @Html.Encode(game.MinPlayers)-@Html.Encode(game.MaxPlayers)<br />
+                            <strong>Play Time:</strong> @Html.Encode(game.PlayTime)
+                        </p>
+                        <a href="/Home/Details?id=@game.BGGId" class="btn btn-outline-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+        <!-- NO RESULTS MESSAGE -->
+<div class="alert alert-warning mt-4" role="alert">
+    No board games found for your search.
+</div>
+
+    <!-- CUSTOM CSS (Task 1HD) -->
+<style>
+        .card:hover {
+            transform: scale(1.02);
+            transition: 0.2s ease-in-out;
+        }
+    .table td {
+        word-wrap: break-word;
+    }
+</style>
