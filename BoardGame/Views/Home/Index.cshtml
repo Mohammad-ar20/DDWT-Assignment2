@@ -145,3 +145,43 @@
     </div>
 }
 
+<!--Card view-->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var game in games)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="@Html.Encode(game.ImagePath)" class="card-img-top"
+                         alt="@Html.Encode(game.Name)"
+                         style="height:200px; object-fit:cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@Html.Encode(game.Name)</h5>
+                        <p class="card-text">
+                            <strong>Category:</strong> @Html.Encode(game.Category)<br />
+                            <strong>Family:</strong> @Html.Encode(game.Family)<br />
+                            <strong>Year:</strong> @Html.Encode(game.YearPublished)<br />
+                            <strong>Players:</strong> @Html.Encode(game.MinPlayers)-@Html.Encode(game.MaxPlayers)<br />
+                            <strong>Play Time:</strong> @Html.Encode(game.PlayTime)
+                        </p>
+                        <a href="/Home/Details?id=@game.BGGId" class="btn btn-outline-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+        <!-- No result -->
+<div class="alert alert-warning mt-4" role="alert">
+    No board games found for your search.
+</div>
+
+   
+<style>
+        .card:hover {
+            transform: scale(1.02);
+            transition: 0.2s ease-in-out;
+        }
+    .table td {
+        word-wrap: break-word;
+    }
+</style>
