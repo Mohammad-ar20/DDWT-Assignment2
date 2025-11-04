@@ -20,51 +20,38 @@
     var categoryList = boardGameDatabase.Query(categoryQuery);
 
     // Base SQL query
+    // Build SQL query based on what user searched for
     var gameQuery = @"SELECT DISTINCT b.*
-FROM BoardGame AS b
-LEFT JOIN GameCategory AS gc ON b.BGGId = gc.BGGId
-LEFT JOIN Category AS c ON gc.Category = c.CategoryID
-WHERE 1=1";
-
-    // Create a list to keep search parameters
-    var searchParameters = new List<object>();
-
-    // Search filter
-    if (!String.IsNullOrEmpty(search))
-    {
-        gameQuery += " AND b.Name LIKE @0";
-        searchParameters.Add("%" + search + "%");
-    }
-
-    // Selected category filter
-    if (!String.IsNullOrEmpty(category) && category != "All")
-    {
-        // Search term
-        if (searchParameters.Count > 0)
-        {
-            gameQuery += " AND c.CategoryID = @1";
-        }
-        else
-        {
-            gameQuery += " AND c.CategoryID = @0";
-        }
-        searchParameters.Add(category);
-    }
-
-    // Sort results
-    gameQuery += " ORDER BY b.Name ASC";
+    FROM BoardGame AS b
+    LEFT JOIN GameCategory AS gc ON b.BGGId = gc.BGGId
+    LEFT JOIN Category AS c ON gc.Category = c.CategoryID
+    WHERE 1=1";
 
     // The query and get results
     IEnumerable<dynamic> gameResults;
 
-    if (searchParameters.Count > 0)
+    // Searched by name & selected a category
+    if (!String.IsNullOrEmpty(search) && !String.IsNullOrEmpty(category) && category != "All")
     {
-        // Query with parameters
-        gameResults = boardGameDatabase.Query(gameQuery, searchParameters.ToArray());
+        gameQuery += " AND b.Name LIKE @0 AND c.CategoryID = @1 ORDER BY b.Name ASC";
+        gameResults = boardGameDatabase.Query(gameQuery, "%" + search + "%", category);
     }
+    // User only searched by name
+    else if (!String.IsNullOrEmpty(search))
+    {
+        gameQuery += " AND b.Name LIKE @0 ORDER BY b.Name ASC";
+        gameResults = boardGameDatabase.Query(gameQuery, "%" + search + "%");
+    }
+    // User only selected a category
+    else if (!String.IsNullOrEmpty(category) && category != "All")
+    {
+        gameQuery += " AND c.CategoryID = @0 ORDER BY b.Name ASC";
+        gameResults = boardGameDatabase.Query(gameQuery, category);
+    }
+    // Show all games (no filters)
     else
     {
-        // Without parameters (show all games)
+        gameQuery += " ORDER BY b.Name ASC";
         gameResults = boardGameDatabase.Query(gameQuery);
     }
 
