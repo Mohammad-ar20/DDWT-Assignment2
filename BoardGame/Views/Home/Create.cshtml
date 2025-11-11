@@ -1,7 +1,79 @@
-﻿
+﻿@using WebMatrix.Data
 @{
-    ViewBag.Title = "Create";
+
+    ViewBag.Title = "Add New Game";
+
+    var db = Database.Open("BoardGame");
+
+    var families = db.Query("SELECT * FROM GameFamily");
+    var themes = db.Query("SELECT * FROM Theme");
+
+    if (IsPost)
+    {
+        var name = Request.Form["Name"];
+        var category = Request.Form["categoryID"];
+        var description = Request.Form["Description"];
+        var year = Request.Form["YearPublished"];
+        var minPlayers = Request.Form["MinPlayers"];
+        var maxPlayers = Request.Form["MaxPlayers"];
+        var img = Request.Form["Image"];
+        var family = Request.Form["FamilyCode"];
+        var newFamily = Request.Form["newFamily"];
+        var theme = Request.Form["ThemeCode"];
+        var newTheme = Request.Form["NewTheme"];
+
+
+        // Insert new game 
+        var insertSql = @"INSERT INTO BoardGame (Name, Category, Description, YearPublished, MinPlayers, MaxPlayers, Image, FamilyCode)
+            VALUES (@0, @1, @2, @3, @4, @5, @6, @7)" +
+            "SELECT SCOPE_IDENTITY()";
+        db.Execute(insertSql, name, category, description, year, minPlayers, maxPlayers,img, family);
+
+        // Redirect after successful creation
+        Response.Redirect("/Home/Index");
+    }
 }
 
-<h2>Create</h2>
+<h2 class="text-center mb-4">Add a New Game</h2>
+<form method="post" class="container mt-4 p-4 bg-light rounded shadow-sm">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <lable>Name:</lable>
+            <input type="text" name="ID" class="form-control" required />
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label>Category:</label>
+            <input type="text" name="Category" class="form-control" required />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Description:</label>
+        <textarea name="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label>Year Published:</label>
+            <input type="number" name="YearPublished" class="form-control" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label>Min Players:</label>
+            <input type="number" name="MinPlayers" class="form-control" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label>Max Players:</label>
+            <input type="number" name="MaxPlayers" class="form-control" />
+        </div>
+    </div>
+
+
+</form>
+
+
+
+
 
