@@ -10,38 +10,47 @@
 
     if (IsPost)
     {
+        var id = Request["ID"];
         var name = Request.Form["Name"];
         var category = Request.Form["categoryID"];
         var description = Request.Form["Description"];
-        DateTime year = DateTime.Parse(Request.Form["YearPublished"]);
+        var year = Request.Form["YearPublished"];
         var age = Request.Form["ComAgeRec"];
         var minPlayers = Request.Form["MinPlayers"];
         var maxPlayers = Request.Form["MaxPlayers"];
         var img = Request.Form["ImagePath"];
-        var family = Request.Form["FamilyCode"];
+        string family = Request.Form["FamilyCode"];
         var newFamily = Request.Form["newFamily"];
         var themeID = Request.Form["ThemeID"];
         var newTheme = Request.Form["NewTheme"];
 
-        // added a new family, insert it
+        // Add new family
         if (!String.IsNullOrEmpty(newFamily))
         {
-            db.Execute("INSERT INTO GameFamily (Family) VALUES (@0)", newFamily);
-            var newFamilyRecord = db.QuerySingle("SELECT TOP 1 FamilyCode FROM GameFamily ORDER BY FamilyCode DESC");
-            family = newFamilyRecord.FamilyCode;
+            var newFamilyCode = db.QueryValue("SELECT ISNULL(MAX(CAST(SUBSTRING(FamilyCode, 2, LEN(FamilyCode)) AS INT)), 0) + 1 FROM GameFamily");
+            db.Execute("INSERT INTO GameFamily (FamilyCode, Family) VALUES (@0, @1)", "F" + newFamilyCode.ToString(), newFamily);
+            family = "F" + newFamilyCode.ToString();
         }
+        // Before inserting
         var newBGGId = db.QueryValue("SELECT ISNULL(MAX(BGGId), 0) + 1 FROM BoardGame");
-        // Insert new game
-        var insertSql = @"INSERT INTO BoardGame (Name, CategoryID, Description, YearPublished, MinPlayers, MaxPlayers, Image, FamilyCode)
-            VALUES (@0, @1, @2, @3, @4, @5, @6, @7)" +
-            "SELECT SCOPE_IDENTITY()";
-        db.Execute(insertSql, name, category, description, year, minPlayers, maxPlayers, img, family);
 
-        // Handle new theme
+        // Insert new game
+        var insertSql = @"INSERT INTO BoardGame (BGGId, Name, Description, YearPublished, MinPlayers, MaxPlayers, ImagePath, Family)
+                  VALUES (@0, @1, @2, @3, @4, @5, @6, @7)";
+        db.Execute(insertSql, newBGGId, name, description, year, minPlayers, maxPlayers, img, family);
+
+        // Category linking
+        if (!String.IsNullOrEmpty(category))
+        {
+            var insertCategory = "INSERT INTO GameCategory (BGGId, Category) VALUES (@0, @1)";
+            db.Execute(insertCategory, newBGGId, category);
+        }
+
+        // ---- Add new theme ----
         if (!String.IsNullOrEmpty(newTheme))
         {
-            db.Execute("INSERT INTO ThemeID (Theme, ThemeName) VALUES (@0, @1)", newTheme);
-            var newThemeRec = db.QuerySingle("SELECT TOP 1 ThemeID FROM Theme WHERE LOWER(ThemeName) = LOWER(@0)");
+            db.Execute("INSERT INTO Theme (ThemeID, ThemeName) SELECT ISNULL(MAX(CAST(SUBSTRING(ThemeID, 2, LEN(ThemeID)) AS INT)), 0) + 1, @0 FROM Theme", newTheme);
+            var newThemeRec = db.QuerySingle("SELECT TOP 1 ThemeID FROM Theme ORDER BY ThemeID DESC");
             themeID = newThemeRec.ThemeID;
         }
 
@@ -70,14 +79,14 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <lable>Name:</lable>
-                    <input type="text" name="gameName" class="form-control" id="gameName" placeholder="Game name">
+                    <input type="text" name="Name" class="form-control" id="Name" placeholder="Game name" required>
                 </div>
 
             </div>
 
             <div class="mb-3">
                 <label>Description</label>
-                <textarea name="gameDescription" id="gameDescription" class="form-control" rows="5" maxlength="5000" placeholder="Game Description"></textarea>
+                <textarea name="Description" id="Description" class="form-control" rows="5" maxlength="5000" placeholder="Game Description"></textarea>
             </div>
 
             <div class="row">
@@ -98,7 +107,7 @@
 
                 <div class="col mb-3">
                     <label class="form-label">Image</label>
-                    <input type="url" class="form-control" name="itemImage" id="itemImage" placeholder="Image URL">
+                    <input type="url" class="form-control" name="ImagePath" id="Image URL" placeholder="Image URL">
                 </div>
             </div>
 
@@ -106,7 +115,7 @@
             <h5>Game Family</h5>
             <div class="form-group">
                 <label>Category:</label>
-                <select name="CategoryID" class="form-control">
+                <select name="Category" class="form-control">
                     <option value=""> Select Category </option>
                     @foreach (var c in categories)
                     {
@@ -134,12 +143,32 @@
             </div>
 
             <hr />
+            <h5>Game Theme</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Select Theme:</label>
+                    <select name="ThemeID" class="form-control">
+                        <option value=""> Select Theme </option>
+                        @foreach (var t in themes)
+                        {
+                            <option value="@t.ThemeID">@t.ThemeID</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Add New Theme:</label>
+                    <input type="text" name="NewTheme" class="form-control" placeholder="Enter new theme name" />
+                </div>
+            </div>
+
+            <hr />
             <div class="mb-3" style="text-align: right">
                 <button type="submit" class="btn btn-success float-right ms-2">Add Game</button>
                 <button type="reset" class="btn btn-danger float-right">Reset</button>
             </div>
         </form>
-        </div>
+    </div>
 </body>
 </html>
 
