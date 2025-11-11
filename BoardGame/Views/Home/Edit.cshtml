@@ -1,11 +1,4 @@
-﻿
-
-
-
-
-
-
-@using WebMatrix.Data
+﻿@using WebMatrix.Data
 @{
     var db = Database.Open("BoardGame");
 
@@ -74,7 +67,7 @@
         }
         catch (Exception Exception)
         {
-            message = "Failed to update the record: " + Exception.Message;
+            message = "Failed to update: " + Exception.Message;
             messageType = "danger";
         }
     }
