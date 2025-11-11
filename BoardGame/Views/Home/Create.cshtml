@@ -46,7 +46,7 @@
             db.Execute(insertCategory, newBGGId, category);
         }
 
-        // ---- Add new theme ----
+        // Add new theme 
         if (!String.IsNullOrEmpty(newTheme))
         {
             db.Execute("INSERT INTO Theme (ThemeID, ThemeName) SELECT ISNULL(MAX(CAST(SUBSTRING(ThemeID, 2, LEN(ThemeID)) AS INT)), 0) + 1, @0 FROM Theme", newTheme);
@@ -60,7 +60,7 @@
             db.Execute("INSERT INTO GameInThemes (BGGId, ThemeID) VALUES (@0, @1)", newBGGId, themeID);
         }
 
-        // Redirect after successful creation
+        // Successful creation
         Response.Redirect("/Home/Details?id=" + newBGGId);
     }
 }
@@ -88,21 +88,25 @@
                 <label>Description</label>
                 <textarea name="Description" id="Description" class="form-control" rows="5" maxlength="5000" placeholder="Game Description"></textarea>
             </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Age Recommendation:</label>
+                <input type="number" name="MfgAgeRec" class="form-control"/>
+            </div>
 
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <label>Year Published:</label>
-                    <input type="number" name="YearPublished" class="form-control" />
+                    <input type="number" name="YearPublished" class="form-control"/>
                 </div>
 
                 <div class="col-md-4 mb-3">
                     <label>Min Players:</label>
-                    <input type="number" name="MinPlayers" class="form-control" />
+                    <input type="number" name="MinPlayers" class="form-control"/>
                 </div>
 
                 <div class="col-md-4 mb-3">
                     <label>Max Players:</label>
-                    <input type="number" name="MaxPlayers" class="form-control" />
+                    <input type="number" name="MaxPlayers" class="form-control"/>
                 </div>
 
                 <div class="col mb-3">
@@ -138,7 +142,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label>Add New Family:</label>
-                    <input type="text" name="NewFamily" class="form-control" placeholder="Enter new family name" />
+                    <input type="text" name="NewFamily" class="form-control" placeholder="Enter new family name"/>
                 </div>
             </div>
 
@@ -158,7 +162,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label>Add New Theme:</label>
-                    <input type="text" name="NewTheme" class="form-control" placeholder="Enter new theme name" />
+                    <input type="text" name="NewTheme" class="form-control" placeholder="Enter new theme name"/>
                 </div>
             </div>
 
