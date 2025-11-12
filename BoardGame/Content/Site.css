@@ -19,8 +19,7 @@ textarea {
     max-width: 280px;
 }
 
-
-<style >
+/* Page Background */
 body {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
@@ -29,7 +28,8 @@ body {
     overflow-x: hidden;
 }
 
-/* Header Styling */
+/* HEADER STYLES */
+/* General Header Styling */
 h2 {
     color: black;
     font-weight: 700;
@@ -40,7 +40,18 @@ h2 {
     letter-spacing: 1px;
 }
 
-/* Search Form Styling */
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/*BUTTON STYLES
+/* Primary Button */
 .btn-primary {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
@@ -50,9 +61,40 @@ h2 {
     letter-spacing: 1px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    border-radius: 10px;
 }
 
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
 
+/* Back Button */
+.back-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+    .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        color: white;
+    }
+
+/*FORM STYLES */
+.form-control {
+    border-radius: 12px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* TABLE STYLES */
 /* Table Styling */
 .table {
     margin-bottom: 0;
@@ -61,27 +103,22 @@ h2 {
     overflow: hidden;
 }
 
+    .table td {
+        word-wrap: break-word;
+    }
 
 /* Striped rows with gradient */
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(102, 126, 234, 0.03);
 }
 
-
-/* Card Hover Effect */
-.card {
-    transition: all 0.3s ease;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Scrollbar Styling for Table */
+/* Table Container with Scroll */
 .table-container {
     max-height: 600px;
     overflow-y: auto;
 }
 
+    /* Scrollbar Styling for Table */
     .table-container::-webkit-scrollbar {
         width: 8px;
     }
@@ -100,37 +137,21 @@ h2 {
             background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         }
 
-
-.card:hover {
-    transform: scale(1.02);
-    transition: 0.2s ease-in-out;
-}
-
-.table td {
-    word-wrap: break-word;
-}
-
-</style >
-
-<style >
-/* Page Background */
-body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    min-height: 100vh;
-    padding: 20px 0;
-}
-
-/* Page Header */
-.page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 30px;
+/* CARD STYLES */
+/* General Card Styling */
+.card {
+    transition: all 0.3s ease;
+    border: none;
     border-radius: 15px;
-    margin-bottom: 30px;
-    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Card Styling */
+    .card:hover {
+        transform: scale(1.02);
+        transition: 0.2s ease-in-out;
+    }
+
+/* Game Detail Card */
 .game-card {
     background: white;
     border-radius: 15px;
@@ -142,6 +163,7 @@ body {
         padding: 30px;
     }
 
+/* GAME DETAILS PAGE STYLES */
 .game-title {
     color: #667eea;
     font-weight: 700;
@@ -214,6 +236,7 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
+/* MESSAGE STYLES */
 /* Error Message */
 .error-message {
     text-align: center;
@@ -221,24 +244,9 @@ body {
     padding: 50px;
     font-size: 1.5rem;
 }
-
-/* Back Button */
-.back-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 8px;
-    text-decoration: none;
-    display: inline-block;
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
+/* Only apply max-width to search forms */
+.search-form input,
+.search-form select,
+.search-form textarea {
+    max-width: 280px;
 }
-
-    .back-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        color: white;
-    }
-
-</style >
