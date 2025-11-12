@@ -69,7 +69,6 @@
             messageType = "danger";
         }
     }
-
     // game details
     dynamic game = null;
     if (!String.IsNullOrEmpty(id))
@@ -252,7 +251,6 @@
             <input type="number" name="numImplementations" class="form-control" value="@game.numImplementations">
         </div>
 
-        <hr />
         <div class="mb-3" style="text-align: right">
             <a href="/Home/Details?id=@game.BGGId" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-success ms-2">Update Game</button>
